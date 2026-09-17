@@ -67,6 +67,14 @@ Suggested combo: `⌥⇧4` (avoids the system screenshot `⌘⇧4`).
 
 Screenshots are saved only inside your local vault. The plugin performs no network calls and does not transmit any data.
 
+## Feedback & bug reports
+
+Found a bug or have a feature request? Please open an issue:
+
+👉 https://github.com/farno/obsidian-secondary-screen-snap/issues
+
+Before posting, include: your macOS version, Obsidian version, the display index you set, and (if a capture failed) the exact error shown. Screenshots/blank-image reports are especially useful.
+
 ## License
 
 MIT © farnolee
@@ -86,5 +94,7 @@ MIT © farnolee
 首次使用请授予权限：系统设置 → 隐私与安全性 → 屏幕录制 → 勾选 Obsidian 并重启，否则截图为空白。
 
 用法：聚焦笔记、放好光标，按你绑定的快捷键即可。设置 → 快捷键 搜索 “Secondary Screen Snap”，推荐 `⌥⇧4`。
+
+反馈 / 报 Bug：请到 https://github.com/farno/obsidian-secondary-screen-snap/issues 提 issue，附上 macOS 版本、Obsidian 版本、你设置的显示器序号，以及（若抓屏失败）具体报错。
 
 许可证：MIT © farnolee
