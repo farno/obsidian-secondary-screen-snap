@@ -1,0 +1,10 @@
+{
+  "id": "secondary-screen-snap",
+  "name": "Secondary Screen Snap",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "Capture a specific monitor (e.g. a secondary display showing an online course) with a hotkey and insert the image at the cursor. macOS only; all screenshots stay in your local vault.",
+  "author": "farnolee",
+  "authorUrl": "https://github.com/farno",
+  "isDesktopOnly": true
+}
