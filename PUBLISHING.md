@@ -1,58 +1,46 @@
-# 发布到 Obsidian 社区插件市场（Publishing）
+# 发布到 Obsidian 社区目录（Publishing — 2025 新流程）
 
-发布本质是：把插件放进一个**公开 GitHub 仓库并打 Release**，再向 `obsidianmd/obsidian-releases` 提交一个 PR，把自己那一行加进 `community-plugins.json`。审核通过后即出现在 设置 → 第三方插件 浏览列表里。
+> 重要变化：收录**不再**是向 `obsidianmd/obsidian-releases` 提 PR 改 `community-plugins.json`。现在走官方门户 **community.obsidian.md**：用 Obsidian 账号登录 → 关联 GitHub → “Add a plugin” 认领你的仓库 → 自动审核。权威文档：https://docs.obsidian.md/Plugins/Releasing/Submit+your+plugin
 
-## 前置：本地 manifest 合规
+## 前置文件（仓库根目录，缺一不可）
 
-`manifest.json` 的必填字段（缺一即报错）：
+- `README.md`：说明插件用途与用法（门户列表页会展示节选，相对图片链接会自动指向仓库）。
+- `LICENSE`：许可证（本仓库为 MIT）。
+- `manifest.json`：插件清单。`version` 用语义化 `x.y.z`；`id` 全局唯一且**不能包含 “obsidian”**（本插件 id=`secondary-screen-snap` ✓）。
+- 遵循 Developer policies 与插件提交要求。
 
-- `id`：全局唯一，小写字母/数字/连字符，**发布后不可改**。这里为 `secondary-screen-snap`，GitHub 仓库名和 `.obsidian/plugins/` 下的文件夹名都用它。
-- `name`：显示名，不要含 “Obsidian”“Plugin” 等冗余词。`Secondary Screen Snap` ✓
-- `version`：语义化 `MAJOR.MINOR.PATCH`。`1.0.0` ✓
-- `minAppVersion`：用到的 API 所需的最低 Obsidian 版本。`1.4.0` ✓
-- `description`：1–2 句，突出功能。已给英文版本 ✓
-- `author`：你的用户名/姓名。**把占位符 `YOUR_NAME` 换成真名。**
-- `isDesktopOnly: true`：本插件用了 Node 的 `child_process`/`fs`，**必须** true。✓
+## Step 1：发布到 GitHub ✅（已完成）
 
-可选：`authorUrl`（你的 GitHub 主页，占位符记得替换）、`fundingUrl`（赞助链接）。
+仓库：https://github.com/farno/obsidian-secondary-screen-snap （公开，含 main.js / manifest.json / styles.css / README.md / LICENSE）。
 
-> 用 `npx obsidian-plugin-validator` 或 `obsidianmd/obsidian-sample-plugin` 自带的 CI 可以本地先校验 manifest。
+## Step 2：创建 GitHub Release ✅（已完成）
 
-## 步骤一：建仓库
+- `manifest.json` 的 `version` = `1.0.0`，Release 的 **tag 必须等于该版本号** → 已建 tag `1.0.0`。
+- Release 资产（binary attachments）已上传：`main.js`、`manifest.json`、`styles.css`。
+- 查看：https://github.com/farno/obsidian-secondary-screen-snap/releases/tag/1.0.0
 
-1. 新建**公开** GitHub 仓库，名如 `obsidian-secondary-screen-snap`。
-2. 提交这些文件到根目录：`main.js`、`manifest.json`、`styles.css`、`README.md`、**`LICENSE`**（社区强烈要求，MIT 或 GPL 皆可）。
-3. README 里写清：功能、动图/截图、**“所有截图只存本地 vault、不联网”**（隐私点，审核和用户都在意）、以及“需授予 Obsidian 屏幕录制权限”。
-4. 建议 `.gitignore` 忽略 `.obsidian/`、`data.json`、`version-bump.json` 等本地文件。
+> 用户安装时，Obsidian 会去 GitHub 找**与 manifest 里 version 同名 tag** 的 Release，下载这三个文件。所以以后每次更新：改 manifest 的 version → 打对应 tag 的新 Release。
 
-可以直接用官方脚手架 `obsidianmd/obsidian-sample-plugin`（含发布用的 GitHub Action，自动同步版本号并打 Release），把源码丢进去更省事。
+## Step 3：在门户提交（需要你本人操作）
 
-## 步骤二：打 GitHub Release
+1. 打开 https://community.obsidian.md → 右上角 **Sign in**，用你的 **Obsidian 账号**（邮箱+密码）登录。没有就点 “Create an account”。
+2. 进入个人/账户设置，**Link GitHub account**（授权 Obsidian 门户访问你的 GitHub，用于校验仓库归属——要关联到拥有该仓库的 `farno` 账号）。
+3. 选择 **Add a plugin / Claim**，填入仓库 `farno/obsidian-secondary-screen-snap`，认领。
+4. 门户会读取默认分支 HEAD 的 `manifest.json` 并做**自动审核**，列出需要修正的问题。
 
-1. 建 tag `1.0.0`（或 `v1.0.0`）并发布 Release。
-2. Release 的**资产(assets)**里上传：`main.js`、`manifest.json`、`styles.css`（部分审核也接受一个 zip，但三件套最稳）。Obsidian 更新器就是从最新 Release 拉这三个文件。
+## Step 4：处理审核反馈
 
-## 步骤三：提交收录 PR
+- 按门户提示改仓库；需要新版本时，递增 `manifest.json` 的 version 并再打一个同名 tag 的 Release。
+- 你可以随时编辑描述并点 **Publish**，但在自动审核的 error 清零前，插件在 Obsidian 内不可安装。
 
-1. Fork `obsidianmd/obsidian-releases`。
-2. 编辑根目录 `community-plugins.json`，在数组里**按字母/按约定位置**追加一项（这是该文件的条目格式）：
-   ```json
-   {
-     "id": "secondary-screen-snap",
-     "name": "Secondary Screen Snap",
-     "author": "YOUR_NAME",
-     "desc": "Capture a secondary display (e.g. online course) with a hotkey and insert it at the cursor. macOS only.",
-     "url": "https://github.com/YOUR_GITHUB_USERNAME/obsidian-secondary-screen-snap"
-   }
-   ```
-3. 发 PR。会触发自动校验（obsidian-plugin-lint 等）；红色失败就按日志改，绿了再等人工审核。审核常提的点：命名/描述规范、无远程代码、无被废弃 API、README 与隐私说明清楚。
+## 通过后
 
-## 步骤四：后续更新
+在论坛 Share & showcase 和 Discord `#updates`（需 developer 角色）公告你的插件。
 
-改代码 → 递增 `manifest.json` 的 `version` → 提交并打新 Release。用户端 Obsidian 会自动检测到新版本。（用 sample-plugin 的 Action 可自动完成 bump + release。）
+---
 
-## 针对本插件的提醒
+### 备注：本仓库现状
 
-- **macOS-only + 屏幕录制权限**：在 README 和 `description` 里明确，避免用户在 Windows 上装了报“仅支持 macOS”。审核偏好诚实描述平台限制。
-- **调用了 `/usr/sbin/screencapture`**：这是调用系统本地二进制、不联网，属于允许范围；但要在 README 说清“不上传任何数据”。
-- `isDesktopOnly` 必须保持 `true`，否则审核会要求你证明移动端可用（本插件用不了 Node API，移动端无解）。
+- 平台限制：macOS-only（调用 `/usr/sbin/screencapture`），`isDesktopOnly: true`。README/描述里已注明，避免误装。
+- 隐私：截图仅写入本地 vault，不联网。
+- 你（作者）显示名 `farnolee`，GitHub 账号 `farno`；门户关联 GitHub 时请用 `farno`。
