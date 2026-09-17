@@ -1,62 +1,90 @@
-# Secondary Screen Snap（Obsidian 副屏截图插件）
+# Secondary Screen Snap
 
-上网课时，Obsidian 在主屏、课程视频在副屏。按下快捷键即可**抓取副屏整屏画面**，自动存到附件文件夹并在**当前光标处**插入，全程不打断、不弹预览。
+Capture a specific monitor (for example a **secondary display showing an online course**) with a single hotkey, save the screenshot into your vault, and **insert it at the current cursor position** — without ever leaving Obsidian.
 
-- 平台：**macOS 专用**（调用系统 `/usr/sbin/screencapture`）
-- 抓取方式：整块显示器截图，原生分辨率，静音
-- 插入位置：当前 Markdown 编辑器光标处
+Built for note-taking during lectures: keep Obsidian on your main monitor, the course on the second one, and snap the course screen straight into your notes.
 
-## 安装
+> ⚠️ **Platform: macOS only.** It calls the system `screencapture` binary. `isDesktopOnly: true`.
 
-1. 打开你的 vault 目录，进入 `.obsidian/plugins/`（没有就手动新建）。
-2. 在其下新建文件夹 `secondary-screen-snap`（名字可自定）。
-3. 把本目录的三个文件复制进去：
-   - `main.js`
-   - `manifest.json`
-   - `styles.css`
-   
-   最终路径形如：
-   ```
-   <你的vault>/.obsidian/plugins/secondary-screen-snap/manifest.json
-   <你的vault>/.obsidian/plugins/secondary-screen-snap/main.js
-   <你的vault>/.obsidian/plugins/secondary-screen-snap/styles.css
-   ```
-4. 重启 Obsidian，或在 设置 → 第三方插件 里点“刷新”，然后**启用 “Secondary Screen Snap”**。
+## Features
 
-## 授予「屏幕录制」权限（关键）
+- One hotkey grabs the whole image of a chosen display at native resolution.
+- The screenshot is written into your vault (default `attachments/网课截图/`) and embedded at the cursor as `![[...]]`.
+- Configurable display index, target folder, filename format, and embed style.
+- Silent capture by default (no shutter sound), no preview dialog — fastest possible flow.
+- **All screenshots stay in your local vault. Nothing is uploaded anywhere; the plugin makes no network requests.**
 
-首次抓屏必须授权，否则截图为空白或报 `could not create image from display`：
+## Install
 
-系统设置 → 隐私与安全性 → **屏幕录制** → 勾选 **Obsidian** → 完全退出并重启 Obsidian。
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/farno/obsidian-secondary-screen-snap/releases/latest).
+2. Put them in your vault at `.obsidian/plugins/secondary-screen-snap/`.
+3. In Obsidian: Settings → Community plugins → refresh → enable **Secondary Screen Snap**.
 
-## 绑定快捷键
+*(Or install it from the Obsidian Community plugin directory by searching “Secondary Screen Snap”.)*
 
-设置 → 快捷键 → 搜索 “Secondary Screen Snap”，为以下任一命令绑一个你顺手的组合键：
+### Required: Screen Recording permission
 
-- **抓取副屏并插入到当前位置**（用设置里固定的显示器序号，网课推荐用这个）
-- **抓取副屏（选择显示器）并插入**（临时弹层选屏）
+The first capture needs macOS to allow Obsidian to record the screen, otherwise you get a blank image or `could not create image from display`:
 
-例如设为 `⌥⇧4`（避开系统截图 `⌘⇧4`）。
+**System Settings → Privacy & Security → Screen Recording → enable Obsidian → fully quit and reopen Obsidian.**
 
-## 设置说明
+## Usage
 
-在 设置 → Secondary Screen Snap 中：
+1. Focus a Markdown note and place the cursor where you want the image.
+2. Press your bound hotkey (see below) — the secondary screen is captured and inserted instantly.
 
-- **显示器序号**：`1` = 主屏，`2` = 第二块屏（一般是副屏/网课）。点右侧 **测试抓屏** 会逐块探测并提示每块分辨率，帮你确认副屏到底是第几块。
-- **附件保存文件夹**：默认 `attachments/网课截图`，留空则存到 vault 根。
-- **文件名格式**：默认 `网课截图 {{date:YYYY-MM-DD}} {{time:HH-mm-ss}}`，支持 `{{date:格式}}`、`{{time:格式}}`、`{{display}}`。
-- **插入样式**：`内嵌 ![[…]]`（推荐）／`Markdown ![](…)`／`普通链接 […]`。
-- **插入后换行**：在图片后补一个换行，方便接着写笔记。
-- **截图提示音**：默认关闭（静音）。
+### Bind a hotkey
 
-## 工作原理与注意
+Settings → Hotkeys → search “Secondary Screen Snap” and assign a shortcut to:
 
-- 命令执行时，Obsidian 窗口保持在前台激活状态，我们抓取的是**另一块显示器的整屏**，所以截到的是网课画面，不会拍到 Obsidian 自己。
-- 截图先在系统临时目录生成 PNG，再读入写入 vault 附件，最后临时文件被清理。
-- 若你的副屏是第 3、4 块，把序号改大即可；`测试抓屏` 会告诉你系统认到的最大屏号。
+- **Capture secondary screen and insert at cursor** — uses the display index from settings (recommended for lectures).
+- **Capture secondary screen (pick display) and insert** — choose a display each time.
 
-## 常见问题
+Suggested combo: `⌥⇧4` (avoids the system screenshot `⌘⇧4`).
 
-- **插入的是空白图**：99% 是没给 Obsidian 屏幕录制权限，按上面重新授权并重启。
-- **想抓到鼠标指针**：`screencapture` 整屏默认不含指针；如需要，可把序号对应屏幕后手动框选，或告诉我加参数。
-- **Windows/Linux**：当前版本仅 macOS。需要跨平台可改用 Electron `desktopCapturer` 方案另做。
+## Settings
+
+- **Display index** — `1` = main, `2` = second monitor (usually your course screen). Use the **Test capture** button to probe each display and see its resolution.
+- **Attachment folder** — relative to the vault root, e.g. `attachments/网课截图`. Leave empty for the vault root.
+- **File name format** — supports `{{date:format}}`, `{{time:format}}`, `{{display}}`.
+- **Insert style** — `embed ![[…]]` (default), `markdown ![](…)`, or plain link.
+- **Insert newline** — append a line break after the image.
+- **Shutter sound** — keep the system click sound (off by default).
+
+## How it works & notes
+
+- Obsidian stays in the foreground; the plugin captures the **other** display, so your notes are never in the shot.
+- The image is generated as a PNG in a temp file, copied into the vault, and the temp file is cleaned up.
+- If your course monitor is the 3rd or 4th display, just raise the index; **Test capture** reports the highest display the system recognizes.
+
+## FAQ
+
+- **Blank image after inserting?** → 99% missing Screen Recording permission. Re-grant it and restart Obsidian.
+- **Can it capture the mouse cursor?** → Full-display `screencapture` does not include the pointer by default.
+- **Windows / Linux?** → Not in this version (macOS-only).
+
+## Privacy
+
+Screenshots are saved only inside your local vault. The plugin performs no network calls and does not transmit any data.
+
+## License
+
+MIT © farnolee
+
+---
+
+## 中文说明
+
+用快捷键抓取指定显示器（例如**显示网课的副屏**）的画面，保存到 vault 并在**当前光标处**插入，全程不离开 Obsidian。
+
+- **仅支持 macOS**（调用系统 `screencapture`），`isDesktopOnly: true`。
+- 截图默认存到 `attachments/网课截图/`，以 `![[…]]` 内嵌；可设置显示器序号、文件夹、文件名格式与插入样式。
+- 默认静音、无预览，最快记录。**所有截图只存本地 vault，不联网、不上传任何数据。**
+
+安装：从 [最新 Release](https://github.com/farno/obsidian-secondary-screen-snap/releases/latest) 下载 `main.js`/`manifest.json`/`styles.css`，放入 `<vault>/.obsidian/plugins/secondary-screen-snap/`，在第三方插件里启用。
+
+首次使用请授予权限：系统设置 → 隐私与安全性 → 屏幕录制 → 勾选 Obsidian 并重启，否则截图为空白。
+
+用法：聚焦笔记、放好光标，按你绑定的快捷键即可。设置 → 快捷键 搜索 “Secondary Screen Snap”，推荐 `⌥⇧4`。
+
+许可证：MIT © farnolee
